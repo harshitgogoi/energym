@@ -1179,31 +1179,32 @@ const PortalPage = ({ id, label, icon: Icon, color, onBack }) => {
             }}>{label}</h1>
           </div>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05, x: -5 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onBack}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: isMobile ? '0.5rem' : '1rem',
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            padding: isMobile ? '0.6rem 1rem' : '1.2rem 2.5rem',
-            borderRadius: isMobile ? '10px' : '16px',
-            color: '#fff',
-            cursor: 'pointer',
-            fontFamily: 'Montserrat',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            fontSize: isMobile ? '0.65rem' : '1rem',
-            width: isMobile ? '100%' : 'auto',
-            justifyContent: 'center'
-          }}
-        >
-          <ArrowLeft size={isMobile ? 14 : 22} /> BACK
-        </motion.button>
+        {!isMobile && (
+          <motion.button
+            whileHover={{ scale: 1.05, x: -5 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onBack}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '1.2rem 2.5rem',
+              borderRadius: '16px',
+              color: '#fff',
+              cursor: 'pointer',
+              fontFamily: 'Montserrat',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontSize: '1rem',
+              justifyContent: 'center'
+            }}
+          >
+            <ArrowLeft size={22} /> BACK
+          </motion.button>
+        )}
       </div>
 
       <div style={{
@@ -1282,7 +1283,12 @@ const App = () => {
   };
 
   const handleMenuToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
+    if (activePage) {
+      setActivePage(null);
+      setIsMenuOpen(false);
+    } else {
+      setIsMenuOpen(!isMenuOpen);
+    }
   };
 
   const menuItems = [
@@ -1305,7 +1311,10 @@ const App = () => {
           onMenuToggle={handleMenuToggle}
           hasEntered={hasEntered}
           isMenuOpen={isMenuOpen}
-          onPageSelect={setActivePage}
+          onPageSelect={(pageId) => {
+            setActivePage(pageId);
+            if (isMobile) setIsMenuOpen(true);
+          }}
         />
 
         {/* Mobile Dropdown Menu Overlay - Mobile Only */}

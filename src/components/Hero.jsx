@@ -50,6 +50,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
     const isMobile = width <= 480;
     const isTablet = width <= 768 && width > 480;
     const isSmallMobile = width <= 360;
+    const showMobileMenu = width < 768;
 
     useEffect(() => {
         const typeTimer = setInterval(() => {
@@ -213,7 +214,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
             </div>
 
             {/* Hamburger Menu - Mobile Only Control */}
-            {(isMobile && hasEntered) && (
+            {showMobileMenu && (
                 <motion.button
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -253,13 +254,13 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                paddingTop: isMobile ? '10vh' : isTablet ? '12vh' : '18vh',
+                paddingTop: isMobile ? '8vh' : isTablet ? '12vh' : '18vh',
                 paddingLeft: isMobile ? '0.75rem' : '1rem',
                 paddingRight: isMobile ? '0.75rem' : '1rem',
                 textAlign: 'center',
             }}>
                 {/* Desktop Menu Buttons - At Top, scrolls with content */}
-                {!isMobile && hasEntered && (
+                {!showMobileMenu && hasEntered && (
                     <motion.div
                         initial={{ opacity: 0, y: -50 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -371,7 +372,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                     }}
                     transition={{ duration: 0.8, ease: "easeInOut", delay: 0 }}
                     style={{
-                        margin: isMobile ? '2rem 0' : '3rem 0',
+                        margin: isMobile ? '1.5rem 0' : '3rem 0',
                         minHeight: isMobile ? '1.5rem' : '2rem',
                         display: 'flex',
                         justifyContent: 'center',
@@ -490,9 +491,9 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 1.2 }}
                     style={{
-                        marginTop: isMobile ? '3rem' : '4rem',
+                        marginTop: isMobile ? '0.5rem' : '4rem',
                         textAlign: 'center',
-                        padding: isMobile ? '1.5rem 1rem' : '2rem 2rem',
+                        padding: isMobile ? '1rem' : '2rem 2rem',
                         maxWidth: isMobile ? '320px' : '650px'
                     }}
                 >
@@ -501,7 +502,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                         color: colors.textWhite,
                         fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
                         lineHeight: 1.4,
-                        marginBottom: isMobile ? '1rem' : '1rem',
+                        marginBottom: isMobile ? '0.5rem' : '1rem',
                         fontWeight: 400,
                         letterSpacing: '1px'
                     }}>
@@ -527,14 +528,14 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                     viewport={{ once: true }}
                     transition={{ duration: 1 }}
                     style={{
-                        marginTop: isMobile ? '4rem' : '8rem',
+                        marginTop: isMobile ? '2rem' : '8rem',
                         padding: isSmallMobile ? '2rem 1.25rem' : isMobile ? '2.5rem 1.5rem' : isTablet ? '3rem 2rem' : '5rem 4rem',
                         background: '#0A0A0A',
                         border: `1px solid ${colors.charcoalMedium}`,
                         borderRadius: '0px',
                         maxWidth: '1400px',
                         width: isMobile ? '100%' : '95%',
-                        marginBottom: isMobile ? '3rem' : '6rem',
+                        marginBottom: isMobile ? '2rem' : '6rem',
                         position: 'relative',
                         overflow: 'hidden'
                     }}
@@ -618,6 +619,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <motion.button
+                            onClick={() => onPageSelect && onPageSelect('membership')}
                             whileHover={{
                                 backgroundColor: colors.highlightYellow,
                                 scale: 1.05,
@@ -653,7 +655,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                     style={{
                         width: '100%',
                         maxWidth: '1400px',
-                        marginBottom: isMobile ? '4rem' : '10rem',
+                        marginBottom: isMobile ? '2rem' : '10rem',
                         padding: isSmallMobile ? '2rem 1.25rem' : isMobile ? '2.5rem 1.5rem' : '5rem 4rem',
                         background: '#080808',
                         borderTop: `1px solid ${colors.charcoalMedium}`,
@@ -749,7 +751,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, delay: 0.6 }}
                         style={{
-                            marginTop: isMobile ? '3rem' : '6rem',
+                            marginTop: isMobile ? '2.5rem' : '6rem',
                             textAlign: 'center',
                             padding: isMobile ? '2rem 1rem' : '3rem',
                             background: '#0D0D0D',
@@ -782,7 +784,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                         width: '100%',
                         maxWidth: '1400px',
                         marginTop: isMobile ? '1rem' : '2rem',
-                        marginBottom: isMobile ? '5rem' : '6rem',
+                        marginBottom: isMobile ? '1rem' : '6rem',
                         padding: isSmallMobile ? '2rem 1.25rem' : isMobile ? '2.5rem 1.5rem' : '4rem 3rem',
                         background: '#050505',
                         borderTop: `4px solid ${colors.primaryYellow}`,
