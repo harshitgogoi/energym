@@ -1159,15 +1159,6 @@ const PortalPage = ({ id, label, icon: Icon, color, onBack }) => {
         gap: isMobile ? '1rem' : 0
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '1rem' : '2.5rem' }}>
-          <div style={{
-            padding: isMobile ? '0.8rem' : '1.8rem',
-            background: 'rgba(255,255,255,0.02)',
-            borderRadius: isMobile ? '14px' : '28px',
-            border: `1px solid ${color}33`,
-            boxShadow: `0 0 30px ${color}11`
-          }}>
-            <Icon size={isMobile ? 28 : 52} color={color} />
-          </div>
           <div>
             <h1 style={{
               fontFamily: 'Oswald',
