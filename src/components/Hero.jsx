@@ -76,12 +76,12 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
 
     return (
         <div className="hero-root" style={{
-            height: '100vh',
-            width: '100vw',
+            minHeight: '100vh',
+            width: '100%',
             position: 'relative',
-            overflowY: 'auto',
-            overflowX: 'hidden',
+            overflowX: 'hidden', // Keep horizontal containment
             backgroundColor: colors.charcoalDeep,
+            // Native body scroll is now used, removed overflowY: auto
         }}>
             {/* ==================== BACKGROUND ENGINEERING ==================== */}
             <div style={{
@@ -118,68 +118,33 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                     WebkitMaskImage: 'radial-gradient(circle at center, black 0%, transparent 80%)'
                 }} />
 
-                {/* === CORNER GLOWS - MOBILE ONLY === */}
-                {/* Top Left - Yellow */}
-                {isMobile && (
+                {/* === CORNER GLOWS - DESKTOP ONLY (removed from mobile for performance) === */}
+                {/* Mobile top/bottom glows removed as requested */}
+
+
+                {/* Ambient Center Glow - Desktop only for performance */}
+                {!isMobile && (
                     <motion.div
-                        animate={{ opacity: [0.6, 0.9, 0.6], scale: [1, 1.1, 1] }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                        animate={{
+                            scale: [1, 1.1, 1],
+                            opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                         style={{
                             position: 'absolute',
-                            top: '-15%',
-                            left: '-8%',
+                            top: '20%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
                             width: '60vw',
                             height: '60vw',
-                            background: `radial-gradient(circle, ${colors.primaryYellow} 0%, transparent 70%)`,
-                            filter: 'blur(80px)',
+                            background: `radial-gradient(circle, ${colors.primaryYellow}22 0%, transparent 60%)`,
+                            borderRadius: '50%',
+                            filter: 'blur(100px)',
                             mixBlendMode: 'screen',
-                            pointerEvents: 'none',
-                            zIndex: 1
+                            pointerEvents: 'none'
                         }}
                     />
                 )}
-                {/* Bottom Right - Gold */}
-                {isMobile && (
-                    <motion.div
-                        animate={{ opacity: [0.5, 0.8, 0.5], scale: [1, 1.2, 1] }}
-                        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                        style={{
-                            position: 'absolute',
-                            bottom: '-15%',
-                            right: '-8%',
-                            width: '70vw',
-                            height: '70vw',
-                            background: `radial-gradient(circle, ${colors.accentGold} 0%, transparent 70%)`,
-                            filter: 'blur(80px)',
-                            mixBlendMode: 'screen',
-                            pointerEvents: 'none',
-                            zIndex: 1
-                        }}
-                    />
-                )}
-
-
-                {/* Ambient Center Glow */}
-                <motion.div
-                    animate={{
-                        scale: [1, 1.1, 1],
-                        opacity: [0.3, 0.5, 0.3],
-                    }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                    style={{
-                        position: 'absolute',
-                        top: '20%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '60vw',
-                        height: '60vw',
-                        background: `radial-gradient(circle, ${colors.primaryYellow}22 0%, transparent 60%)`,
-                        borderRadius: '50%',
-                        filter: 'blur(100px)',
-                        mixBlendMode: 'screen',
-                        pointerEvents: 'none'
-                    }}
-                />
 
                 {/* Interactive Mouse Spotlight */}
                 {!isMobile && (
@@ -226,16 +191,14 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                         top: isSmallMobile ? '0.75rem' : '1rem',
                         right: isSmallMobile ? '0.75rem' : '1rem',
                         zIndex: 1000,
-                        background: 'rgba(26, 26, 26, 0.8)',
-                        backdropFilter: 'blur(10px)',
+                        background: 'rgba(26, 26, 26, 0.95)',
                         border: `1px solid ${colors.primaryYellow}`,
                         borderRadius: '8px',
                         padding: isSmallMobile ? '0.5rem' : '0.6rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: `0 0 15px ${colors.primaryYellow}30`
+                        justifyContent: 'center'
                     }}
                 >
                     {isMenuOpen ? (
@@ -318,8 +281,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                         <div style={{
                             width: '100%',
                             height: '1px',
-                            background: colors.primaryYellow,
-                            boxShadow: `0 0 10px ${colors.primaryYellow}40`
+                            background: colors.primaryYellow
                         }} />
                     </motion.div>
                 )}
@@ -359,7 +321,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                         width: isMobile ? '60px' : '120px',
                         height: isMobile ? '4px' : '6px',
                         background: colors.primaryYellow,
-                        boxShadow: `0 0 20px ${colors.primaryYellow}`
+                        boxShadow: isMobile ? 'none' : `0 0 20px ${colors.primaryYellow}`
                     }} />
                 </motion.div>
 
@@ -902,7 +864,7 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                     background: colors.charcoalDark,
                     padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
                     border: `2px solid ${colors.primaryYellow}`,
-                    boxShadow: `0 0 15px ${colors.primaryYellow}30`
+                    boxShadow: isMobile ? 'none' : `0 0 15px ${colors.primaryYellow}30`
                 }}
             >
                 <div style={{

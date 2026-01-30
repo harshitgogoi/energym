@@ -33,6 +33,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--charcoal-deep);
@@ -159,6 +163,11 @@ body {
     font-size: 1rem;
   }
 
+  /* Remove box-shadow glow on mobile for performance */
+  .btn-portal:hover {
+    box-shadow: none;
+  }
+
   .section-container {
     padding: 3rem 1rem;
     min-height: auto;
@@ -225,5 +234,18 @@ body {
   .btn-portal {
     padding: 0.7rem 1.2rem;
     font-size: 0.85rem;
+  }
+}
+
+/* Respect user preference for reduced motion - improves performance and accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

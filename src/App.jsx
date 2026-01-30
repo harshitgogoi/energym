@@ -145,33 +145,44 @@ const SectionFooter = ({ isMobile }) => (
 // --- Components ---
 
 const TransformationSlider = ({ before, after, label }) => {
-  const [sliderPos, setSliderPos] = useState(20);
+  const [sliderPos, setSliderPos] = useState(20); // Default start 20%
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
 
-  const handleMove = (e) => {
-    if (!isDragging || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPos(percent);
-  };
-
   useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMove = (e) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.width === 0) return;
+
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const x = clientX - rect.left;
+      const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+      setSliderPos(percent);
+    };
+
     const handleUp = () => setIsDragging(false);
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove);
     window.addEventListener('mouseup', handleUp);
     window.addEventListener('touchend', handleUp);
+
     return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchmove', handleMove);
       window.removeEventListener('mouseup', handleUp);
       window.removeEventListener('touchend', handleUp);
     };
-  }, []);
+  }, [isDragging]);
 
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleMove}
-      onTouchMove={handleMove}
+      onMouseDown={(e) => { setIsDragging(true); }}
+      onTouchStart={() => setIsDragging(true)}
       style={{
         position: 'relative',
         width: '100%',
@@ -186,25 +197,42 @@ const TransformationSlider = ({ before, after, label }) => {
       {/* Base Layer: BEFORE */}
       <img src={before} alt="Before" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
-      {/* Overlay Layer: AFTER (Revealed as slider moves right) */}
+      {/* Overlay Layer: AFTER (Revealed via Scale Transform - GPU Optimized) */}
       <div style={{
         position: 'absolute',
         top: 0,
         left: 0,
-        width: `${sliderPos}%`,
+        width: '100%',
         height: '100%',
         overflow: 'hidden',
-        borderRight: '3px solid var(--accent-yellow)',
-        pointerEvents: 'none',
-        zIndex: 2
+        zIndex: 2,
+        transformOrigin: 'left',
+        transform: `scaleX(${sliderPos / 100})`,
+        willChange: 'transform',
+        pointerEvents: 'none'
       }}>
         <img
           src={after}
           alt="After"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', maxWidth: 'none', width: containerRef.current?.offsetWidth || '1000%' }}
+          style={{
+            height: '100%',
+            width: '100%',
+            objectFit: 'cover',
+            maxWidth: 'none',
+            transformOrigin: 'left',
+            transform: `scaleX(${sliderPos > 0 ? 100 / sliderPos : 1000})`,
+            willChange: 'transform'
+          }}
         />
-        <div style={{ position: 'absolute', top: '1rem', left: '1rem', background: 'rgba(255,215,0,0.8)', padding: '0.2rem 0.6rem', borderRadius: '4px', color: '#000', fontSize: '0.7rem', fontFamily: 'Oswald', fontWeight: 900 }}>AFTER</div>
       </div>
+
+      {/* "After" Label - Floating (Because inside overlay it would be squished) */}
+      <div style={{
+        position: 'absolute', top: '1rem', left: '1rem',
+        background: 'rgba(255,215,0,0.8)', padding: '0.2rem 0.6rem', borderRadius: '4px',
+        color: '#000', fontSize: '0.7rem', fontFamily: 'Oswald', fontWeight: 900,
+        zIndex: 3, pointerEvents: 'none', opacity: sliderPos > 10 ? 1 : 0, transition: 'opacity 0.2s'
+      }}>AFTER</div>
 
       {/* Background Label */}
       <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', padding: '0.2rem 0.6rem', borderRadius: '4px', color: '#fff', fontSize: '0.7rem', fontFamily: 'Oswald', zIndex: 1 }}>BEFORE</div>
@@ -228,6 +256,17 @@ const TransformationSlider = ({ before, after, label }) => {
           justifyContent: 'center'
         }}
       >
+        {/* Vertical Line */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: '50%',
+          marginLeft: '-1.5px',
+          width: '3px',
+          background: 'var(--accent-yellow)'
+        }} />
+
         <div style={{
           width: '40px',
           height: '40px',
@@ -237,7 +276,8 @@ const TransformationSlider = ({ before, after, label }) => {
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: '0 0 15px rgba(255,215,0,0.4)',
-          flexShrink: 0
+          flexShrink: 0,
+          position: 'relative' // Ensure knob is above line
         }}>
           <div style={{ display: 'flex', gap: '2px' }}><div style={{ width: '2px', height: '15px', background: '#000' }} /><div style={{ width: '2px', height: '15px', background: '#000' }} /></div>
         </div>
@@ -428,13 +468,13 @@ const SectionContent = ({ id }) => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedEq(null)}
-                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backdropFilter: 'blur(5px)' }}
+                style={{ position: 'fixed', inset: 0, background: isMobile ? 'rgba(0,0,0,0.95)' : 'rgba(0,0,0,0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backdropFilter: isMobile ? 'none' : 'blur(5px)' }}
               >
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.9, opacity: 0 }}
-                  style={{ background: '#111', borderRadius: '16px', overflow: 'hidden', maxWidth: '800px', width: '100%', border: `1px solid ${selectedEq.color}`, boxShadow: `0 0 50px ${selectedEq.color}20`, position: 'relative' }}
+                  style={{ background: '#111', borderRadius: '16px', overflow: 'hidden', maxWidth: '800px', width: '100%', border: `1px solid ${selectedEq.color}`, boxShadow: isMobile ? 'none' : `0 0 50px ${selectedEq.color}20`, position: 'relative' }}
                   onClick={e => e.stopPropagation()}
                 >
                   <button onClick={() => setSelectedEq(null)} style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer', zIndex: 2 }}>✕</button>
@@ -474,7 +514,7 @@ const SectionContent = ({ id }) => {
               { name: 'PREMIUM', price: '2,500', color: colors.primaryYellow, features: ['Everything in Standard', 'Steam & Sauna', 'Personal Diet Chart', '2 Personal Training Sessions', 'Full Facility Access'], recommended: true },
               { name: 'ULTIMATE', price: '4,500', color: '#d500f9', features: ['Everything in Premium', 'Unlimited Personal Training', 'Massage Therapy', 'Guest Privileges', 'Private Locker'] }
             ].map((plan, i) => (
-              <div key={i} style={{
+              <motion.div key={i} style={{
                 background: plan.recommended ? `linear-gradient(135deg, rgba(245, 197, 24, 0.15), rgba(0,0,0,0.8))` : 'rgba(20,20,20,0.6)',
                 border: `1px solid ${plan.recommended ? colors.primaryYellow : '#333'}`,
                 borderRadius: '24px',
@@ -537,7 +577,7 @@ const SectionContent = ({ id }) => {
                 >
                   JOIN NOW
                 </button>
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -559,7 +599,7 @@ const SectionContent = ({ id }) => {
                   borderRadius: '12px',
                   zIndex: 2000,
                   textAlign: 'center',
-                  boxShadow: '0 0 30px rgba(0,255,0,0.3)'
+                  boxShadow: isMobile ? 'none' : '0 0 30px rgba(0,255,0,0.3)'
                 }}
               >
                 <p style={{ margin: 0, fontFamily: 'Oswald', fontSize: isMobile ? '1rem' : '1.3rem', color: '#00ff00' }}>
@@ -583,8 +623,8 @@ const SectionContent = ({ id }) => {
                 style={{
                   position: 'fixed',
                   inset: 0,
-                  background: 'rgba(0,0,0,0.85)',
-                  backdropFilter: 'blur(5px)',
+                  background: isMobile ? 'rgba(0,0,0,0.95)' : 'rgba(0,0,0,0.85)',
+                  backdropFilter: isMobile ? 'none' : 'blur(5px)',
                   zIndex: 1000,
                   display: 'flex',
                   alignItems: 'center',
@@ -842,7 +882,7 @@ const SectionContent = ({ id }) => {
                   borderRadius: '12px',
                   zIndex: 1000,
                   textAlign: 'center',
-                  boxShadow: '0 0 30px rgba(0,255,0,0.3)'
+                  boxShadow: isMobile ? 'none' : '0 0 30px rgba(0,255,0,0.3)'
                 }}
               >
                 <p style={{ margin: 0, fontFamily: 'Oswald', fontSize: isMobile ? '1rem' : '1.3rem', color: '#00ff00' }}>
@@ -1031,7 +1071,7 @@ const SectionContent = ({ id }) => {
                   justifyContent: 'center',
                   marginBottom: '1.5rem',
                   zIndex: 1,
-                  boxShadow: `0 0 20px ${coach.color}30`
+                  boxShadow: isMobile ? 'none' : `0 0 20px ${coach.color}30`
                 }}>
                   <span style={{ fontFamily: 'Oswald', fontSize: '2.5rem', color: coach.color, fontWeight: 700 }}>
                     {coach.name.split(' ').map(n => n[0]).join('')}
@@ -1321,8 +1361,7 @@ const App = () => {
                 top: '60px',
                 right: '1rem',
                 width: 'calc(100vw - 2rem)',
-                background: 'rgba(15, 15, 15, 0.95)',
-                backdropFilter: 'blur(15px)',
+                background: 'rgba(15, 15, 15, 0.98)',
                 border: `1px solid ${colors.charcoalMedium}`,
                 borderTop: `3px solid ${colors.primaryYellow}`,
                 borderRadius: '4px',
