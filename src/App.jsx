@@ -139,6 +139,19 @@ const SectionFooter = ({ isMobile }) => (
         <MapPin size={isMobile ? 12 : 14} /> OPEN IN MAPS
       </a>
     </div>
+    {/* Developer Credit */}
+    <div style={{
+      gridColumn: '1 / -1',
+      textAlign: 'center',
+      paddingTop: '2rem',
+      marginTop: '2rem',
+      borderTop: `1px solid ${colors.charcoalLight}`,
+      color: colors.textGrey,
+      fontSize: '0.8rem',
+      fontFamily: "'Inter', sans-serif"
+    }}>
+      Developed with <span style={{ color: '#ff0000' }}>❤️</span> by <a href="https://github.com/Harshit-Gogoi" target="_blank" rel="noopener noreferrer" style={{ color: colors.primaryYellow, textDecoration: 'none', fontWeight: 'bold' }}>Harshit Gogoi</a>
+    </div>
   </div>
 );
 

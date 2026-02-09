@@ -838,6 +838,20 @@ const Hero = ({ onEnter, onMenuToggle, hasEntered, isMenuOpen, onPageSelect }) =
                             </p>
                         </div>
                     </div>
+                    {/* Developer Credit */}
+                    <div style={{
+                        gridColumn: '1 / -1',
+                        textAlign: 'center',
+                        paddingTop: '2rem',
+                        marginTop: '2rem',
+                        borderTop: `1px solid ${colors.charcoalLight}`,
+                        color: colors.textGrey,
+                        fontSize: '0.8rem',
+                        fontFamily: "'Outfit', sans-serif",
+                        fontWeight: 300
+                    }}>
+                        Developed with <span style={{ color: '#ff0000' }}>❤️</span> by <a href="https://github.com/Harshit-Gogoi" target="_blank" rel="noopener noreferrer" style={{ color: colors.primaryYellow, textDecoration: 'none', fontWeight: 600 }}>Harshit Gogoi</a>
+                    </div>
                 </motion.footer>
 
 
